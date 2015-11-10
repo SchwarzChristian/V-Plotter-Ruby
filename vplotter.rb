@@ -65,6 +65,12 @@ class VPlotter
     end
   end
 
+  def finalize
+    draw do |d|
+      d.home
+    end
+  end
+
   def customConfig hash
     @config = hash
   end
@@ -75,6 +81,14 @@ class VPlotter
     block.call plotter
     
     plotter.close
+  end
+
+  def width
+    @config[:width]
+  end
+
+  def height
+    @config[:height]
   end
   
   private
@@ -106,7 +120,8 @@ class VPlotter
       pos_cali:  [230, 350],
       width:     580,
       height:    400,
-    }
+    },
+    
   }
 
   def use_predefined config
