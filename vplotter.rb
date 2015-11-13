@@ -16,16 +16,19 @@ class VPlotter
   # You should not use this class directly, use VPlotter#draw instead!
   class Commander
     # You should not use this class directly, use VPlotter#draw instead!
-    def initialize config
+    def initialize position, config
+      @position = position
+      @config   = config
       M_intern.vp_init(config[:pos_left][0],  config[:pos_left][1],
                        config[:pos_right][0], config[:pos_right][1],
-                       config[:pos_cali][0],  config[:pos_cali][1],
+                       position[0],           position[1],
                        config[:width],        config[:height])
     end
 
     # Resets the current position to the calibration points position.
     def calibrate
       M_intern.vp_calibrate
+      @position = @config[:pos_cali]
     end
 
     # Wait for the given time (in seconds, fractions are allowed)
@@ -60,6 +63,7 @@ class VPlotter
     end
 
     # Rotate the left motor.
+    # Warning: This command may cause loosing calibration information!
     # [Parameter]
     #   +distance+:: cord length to wind/unwind in mm
     def rotateLeftMotor distance
@@ -67,6 +71,7 @@ class VPlotter
     end
 
     # Rotate the right motor.
+    # Warning: This command may cause loosing calibration information!
     # [Parameter]
     #   +distance+:: cord length to wind/unwind in mm
     def rotateRightMotor distance
@@ -79,6 +84,7 @@ class VPlotter
     #   +y+:: y coordinate
     def goto x, y
       M_intern.vp_goto x.to_i, y.to_i
+      @position = [x, y]
     end
 
     # Moves the print head relative to the current position.
@@ -87,16 +93,19 @@ class VPlotter
     #   +y+:: y coordinate
     def move x, y
       M_intern.vp_move x.to_i, y.to_i
+      @position = [@position[0] + x, @position[1] + y]
     end
 
     # Moves the print head back to the calibration point.
     def home
       M_intern.vp_home
+      @position = @config[:pos_cali]
     end
 
-    # You should not use this directly, use VPlotter#draw instead!
+    # You should not use this class directly, use VPlotter#draw instead!
     def close
       M_intern.vp_close
+      @position
     end
   end
 
@@ -104,12 +113,21 @@ class VPlotter
   # [Parameter]
   #   +config+:: configuration to use (default: +:default+)
   def initialize config = nil
-    return if config.is_a?(Symbol) and use_predefined(config)
-    if config.is_a? Hash then
-      @config = config
-    else
-      use_predefined :default
+    use_config config
+  end
+
+  # Use a predefined config.
+  # [Parameter]
+  #   +config+:: config to use
+  def use_config config
+    unless config.is_a?(Symbol) and use_predefined(config)
+      if config.is_a? Hash then
+        @config = config
+      else
+        use_predefined :default
+      end
     end
+    @position = @config[:pos_cali]
   end
 
   # Sets a custom configuration to use.
@@ -142,11 +160,15 @@ class VPlotter
   # The given block will pe called with a +Commander+-instance as
   # parameter that can be used to draw stuff.
   def draw &block
-    cmd = Commander.new @config
+    cmd = Commander.new @position, @config
     
-    block.call plotter
+    block.call cmd
     
-    cmd.close
+    @position = cmd.close
+  end
+
+  def position
+    @position
   end
 
   def width
@@ -181,6 +203,13 @@ class VPlotter
 
   Predefined = {
     default: {
+      pos_left:  [  0, 200],
+      pos_right: [100, 200],
+      pos_cali:  [ 50, 150],
+      width:     100,
+      height:    200,
+    },
+    plotbert: {
       pos_left:  [-27, 440],
       pos_right: [543, 440],
       pos_cali:  [230, 350],
