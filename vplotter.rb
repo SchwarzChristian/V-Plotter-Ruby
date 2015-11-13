@@ -11,6 +11,7 @@ require "ffi"
 #     d.penUp
 #     d.home
 #   end
+# For a list of all drawing functions see Commander.
 class VPlotter
   # Helper class to encapsulate drawing functionality
   # You should not use this class directly, use VPlotter#draw instead!
@@ -167,14 +168,17 @@ class VPlotter
     @position = cmd.close
   end
 
+  # Get the current position.
   def position
     @position
   end
 
+  # Get the width of the canvas.
   def width
     @config[:width]
   end
 
+  # Get the height of the canvas.
   def height
     @config[:height]
   end
