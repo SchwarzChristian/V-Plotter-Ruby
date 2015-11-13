@@ -133,8 +133,9 @@ class VPlotter
   # do this, your output may look strange ;)
   #
   # [Predefined Configs]
-  #   +:default+:: values to use to test stuff without a real hardware setup
-  #   +:plotbert+:: config for the PlotBert hardware setup
+  #   +:default+::  values to use to test stuff without a real hardware setup
+  #   +:plotbert+:: config for the {PlotBert}[https://wiki.c3d2.de/V-Plotter]
+  #                 hardware setup
   # [Parameter]
   #   +hash+:: configuration to use as +Hash+
   #
