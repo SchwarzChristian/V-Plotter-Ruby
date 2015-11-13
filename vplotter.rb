@@ -113,30 +113,33 @@ class VPlotter
   # Creates a new VPlotter-instance.
   # [Parameter]
   #   +config+:: configuration to use (default: +:default+)
+  # 
+  # see also: #use_config
   def initialize config = nil
     use_config config
   end
 
-  # Use a predefined config.
+  # Sets the new configuration to use. You can use a predefined
+  # config or define your own.
   # [Parameter]
   #   +config+:: config to use
-  def use_config config
-    unless config.is_a?(Symbol) and use_predefined(config)
-      if config.is_a? Hash then
-        @config = config
-      else
-        use_predefined :default
-      end
-    end
-    @position = @config[:pos_cali]
-  end
-
-  # Sets a custom configuration to use.
+  #
+  # Distances are measured in mm from a constant origin point.
+  # You can define every point you want as origin, but you
+  # have to use the same point define positions relative to.
+  # You should also define your coordinate system such that the
+  # x-axis is parallel to the line that connects the two motors
+  # and the y-axis is perpendicular to that line. If you don't
+  # do this, your output may look strange ;)
+  #
+  # [Predefined Configs]
+  #   +:default+:: values to use to test stuff without a real hardware setup
+  #   +:plotbert+:: config for the PlotBert hardware setup
   # [Parameter]
   #   +hash+:: configuration to use as +Hash+
   #
-  # == Example
-  #
+  # == Example for a custom configuration
+  # 
   #   config = {
   #     pos_left:  [  0, 100], # position of the left motor
   #     pos_right: [100, 100], # position of the right motor
@@ -152,8 +155,15 @@ class VPlotter
   #   plotter = VPlotter.new
   #   plotter.customConfig config
   #
-  def customConfig hash
-    @config = hash
+  def use_config config
+    unless config.is_a?(Symbol) and use_predefined(config)
+      if config.is_a? Hash then
+        @config = config
+      else
+        use_predefined :default
+      end
+    end
+    @position = @config[:pos_cali]
   end
 
   # Start drawing.
