@@ -201,8 +201,8 @@ class VPlotter
     ffi_lib '/usr/lib/libvplotter.so'
     
     attach_function :vp_init,
-    [:int, :int, :int, :int,
-     :int, :int, :int, :int], :void
+    [:int, :int, :int, :int, :int, :int,
+     :int, :int, :int, :int, :int], :void
     attach_function :vp_calibrate, [], :void
     attach_function :vp_wait, [:float], :void
     attach_function :vp_pen_up, [], :void
@@ -223,13 +223,25 @@ class VPlotter
       pos_cali:  [ 50, 150],
       width:     100,
       height:    200,
+      servo:     {
+        up:     90,
+        down:   10,
+        range: 100,
+      },
     },
     plotbert: {
       pos_left:  [-27, 440],
       pos_right: [543, 440],
       pos_cali:  [230, 350],
+      
       width:     580,
       height:    400,
+
+      servo: {
+        up:     70,
+        down:   30,
+        range: 100,
+      }
     },
     
   }
